@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mines Signal 1Win</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f0f1f 0%, #1a1a3a 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            background: rgba(25, 25, 45, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+            padding: 25px 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .content {
+            padding: 25px 20px;
+        }
+        
+        .section {
+            background: rgba(49, 49, 73, 0.6);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #6a79ff;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #434343;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+        
+        .mines-selector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            gap: 15px;
+        }
+        
+        .selector-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .selector-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .mines-display {
+            font-size: 48px;
+            font-weight: 800;
+            color: #6a79ff;
+            text-shadow: 0 0 15px rgba(106, 121, 255, 0.5);
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(35, 35, 55, 0.7);
+            border-radius: 12px;
+        }
+        
+        .info-box {
+            text-align: center;
+        }
+        
+        .info-label {
+            font-size: 14px;
+            color: #6a79ff;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .mines-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 25px 0;
+        }
+        
+        .cell {
+            aspect-ratio: 1;
+            background: linear-gradient(145deg, #2c2c4c, #232347);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .cell.revealed {
+            background: linear-gradient(145deg, #3a3a6d, #2f2f5c);
+            transform: scale(0.95);
+        }
+        
+        .cell.mine {
+            background: linear-gradient(145deg, #ff3366, #cc0044);
+            color: white;
+        }
+        
+        .cell.star {
+            background: linear-gradient(145deg, #ffcc00, #ff9900);
+            color: white;
+        }
+        
+        .buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(106, 17, 203, 0.6);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .signal-active {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(106, 17, 203, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(106, 17, 203, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(106, 17, 203, 0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Signal Mines 1Win</h1>
+            <div class="subtitle">Powered by premium signals</div>
+        </div>
+        
+        <div class="content">
+            <div class="section">
+                <div class="section-title">
+                    <span>TWin</span>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="subtitle">Switch to multiple</div>
+            </div>
+            
+            <div class="mines-selector">
+                <button class="selector-btn" id="decreaseBtn">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                
+                <div class="mines-display" id="minesCount">3</div>
+                
+                <button class="selector-btn" id="increaseBtn">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+            
+            <div class="game-info">
+                <div class="info-box">
+                    <div class="info-label">MINAS</div>
+                    <div class="info-value" id="minesValue">3</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-label">ESTRELLAS</div>
+                    <div class="info-value">2</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-label">PAGO</div>
+                    <div class="info-value" id="payoutValue">4.5x</div>
+                </div>
+            </div>
+            
+            <div class="mines-grid" id="minesGrid">
+                <!-- Las celdas se generarán con JavaScript -->
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Elige una casilla</div>
+                <div class="subtitle">Presiona Signal para revelar todas las casillas</div>
+            </div>
+            
+            <div class="buttons">
+                <button class="btn btn-primary" id="signalBtn">
+                    <i class="fas fa-bolt"></i> Signal
+                </button>
+                <button class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+            </div>
+        </div>
+        
+        <div class="footer">
+            Mines Signal Bot © 2025 | 1Win
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const grid = document.getElementById('minesGrid');
+            const signalBtn = document.getElementById('signalBtn');
+            const minesCountDisplay = document.getElementById('minesCount');
+            const minesValueDisplay = document.getElementById('minesValue');
+            const payoutValueDisplay = document.getElementById('payoutValue');
+            const decreaseBtn = document.getElementById('decreaseBtn');
+            const increaseBtn = document.getElementById('increaseBtn');
+            
+            const rows = 5;
+            const cols = 5;
+            const totalCells = rows * cols;
+            const starCount = 2;
+            
+            let mineCount = 3;
+            let cells = [];
+            let revealed = false;
+            
+            // Actualizar la visualización del número de minas
+            function updateMinesDisplay() {
+                minesCountDisplay.textContent = mineCount;
+                minesValueDisplay.textContent = mineCount;
+                
+                // Calcular pago basado en el número de minas
+                const payout = (totalCells / (totalCells - mineCount)).toFixed(1);
+                payoutValueDisplay.textContent = payout + 'x';
+            }
+            
+            // Inicializar el tablero
+            function initializeBoard() {
+                grid.innerHTML = '';
+                cells = [];
+                
+                // Crear array con minas, estrellas y celdas vacías
+                let board = Array(totalCells).fill('empty');
+                
+                // Colocar minas
+                for (let i = 0; i < mineCount; i++) {
+                    board[i] = 'mine';
+                }
+                
+                // Colocar estrellas
+                for (let i = mineCount; i < mineCount + starCount; i++) {
+                    board[i] = 'star';
+                }
+                
+                // Mezclar el array
+                board = shuffleArray(board);
+                
+                // Crear celdas en el DOM
+                for (let i = 0; i < totalCells; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.type = board[i];
+                    
+                    // Añadir ícono según el tipo de celda
+                    if (board[i] === 'mine') {
+                        cell.innerHTML = '<i class="fas fa-bomb"></i>';
+                    } else if (board[i] === 'star') {
+                        cell.innerHTML = '<i class="fas fa-star"></i>';
+                    }
+                    
+                    // Ocultar ícono inicialmente
+                    cell.style.color = 'transparent';
+                    
+                    grid.appendChild(cell);
+                    cells.push(cell);
+                }
+                
+                revealed = false;
+                signalBtn.classList.remove('signal-active');
+            }
+            
+            // Función para mezclar array (algoritmo Fisher-Yates)
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+            
+            // Revelar todas las celdas
+            function revealAllCells() {
+                if (revealed) return;
+                
+                cells.forEach(cell => {
+                    cell.classList.add('revealed');
+                    cell.style.color = 'white';
+                    
+                    // Añadir clase específica según el tipo
+                    if (cell.dataset.type === 'mine') {
+                        cell.classList.add('mine');
+                    } else if (cell.dataset.type === 'star') {
+                        cell.classList.add('star');
+                    }
+                });
+                
+                revealed = true;
+                signalBtn.classList.add('signal-active');
+            }
+            
+            // Disminuir el número de minas
+            function decreaseMines() {
+                if (mineCount > 1) {
+                    mineCount--;
+                    updateMinesDisplay();
+                    initializeBoard();
+                }
+            }
+            
+            // Aumentar el número de minas
+            function increaseMines() {
+                if (mineCount < 7) {
+                    mineCount++;
+                    updateMinesDisplay();
+                    initializeBoard();
+                }
+            }
+            
+            // Event listeners
+            signalBtn.addEventListener('click', revealAllCells);
+            decreaseBtn.addEventListener('click', decreaseMines);
+            increaseBtn.addEventListener('click', increaseMines);
+            
+            // Inicializar el tablero y la visualización
+            updateMinesDisplay();
+            initializeBoard();
+        });
+    </script>
+</body>
+</html>
